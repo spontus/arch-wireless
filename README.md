@@ -21,7 +21,7 @@ installation :)
     #comment lines with #
     #coffee cafe 
 ```
-5. add your authentication-details to /etc/wpa_supplicant.conf, see https://wiki.archlinux.org/index.php/WPA_supplicant for instructions
+5. add your authentication-details to `/etc/wpa_supplicant.conf`, see https://wiki.archlinux.org/index.php/WPA_supplicant for instructions
 6. open `rc.conf` with your favorite editor, eg `sudo vim /etc/rc.conf`
 7. Paste this somewhere in the file, preferably below the `NETWORKS`-section
 ``` bash
