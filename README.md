@@ -15,15 +15,15 @@ installation :)
 4. create a new file called `/etc/essids` and list the essids of your networks there, eg.
 ```
     homewifi
-
     eduroam
-
-    workwifi
+    Work Wireless
+    coffee cafe
 ```
 if homewifi and eduroam are both in range it will connect to homewifi
 5. add your authentication-details to /etc/wpa_supplicant.conf, see https://wiki.archlinux.org/index.php/WPA_supplicant for instructions
 6. open `rc.conf` with your favorite editor, eg `sudo vim /etc/rc.conf`
 7. Paste this somewhere in the file, preferably below the `NETWORKS`-section
+``` bash
     # Wireless setup
     																     
     # Wireless interface, (default wlan0)                                                                                                
@@ -37,6 +37,7 @@ if homewifi and eduroam are both in range it will connect to homewifi
     			
     # Kernel module to insert and remove (optional)
     WIRELESS_MODULE=iwlagn       
+```
 8. change the above variables to conform to your system
 9. test it by running `sudo rc.d start wireless`
 10. add `@wireless` to the `DAEMONS` array in `rc.conf` to autoconnect to a known network in range upon boot
