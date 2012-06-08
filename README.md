@@ -10,32 +10,32 @@ A script to automate connecting your beloved archlaptop to wireless networks, it
 installation :)
 -------------
 1. clone the repo
-2. symlink "wireless" into /etc/rc.d using "ln -s"
-3. make sure "wireless" is executable using "chmod +x"
-4. create a new file called "/etc/essids" and list the essids of your networks there, eg.
-	homewifi
-	eduroam
-	workwifi
+2. symlink `wireless` into /etc/rc.d using `ln -s`
+3. make sure `wireless` is executable using `chmod +x`
+4. create a new file called `/etc/essids` and list the essids of your networks there, eg.
+    homewifi
+    eduroam
+    workwifi
 if homewifi and eduroam are both in range it will connect to homewifi
 5. add your authentication-details to /etc/wpa_supplicant.conf, see https://wiki.archlinux.org/index.php/WPA_supplicant for instructions
-6. open "rc.conf" with your favorite editor, eg "sudo vim /etc/rc.conf"
-7. Paste this somewhere in the file, preferably below the "NETWORKS"-section
-	# Wireless setup
-																	     
-	# Wireless interface, (default wlan0)                                                                                                
-	WIRELESS_INTERFACE=wlan0                                                                                                             
-			
-	# List of essids to recognise, in descending priority order (default /etc/essids)                                                    
-	ESSID_LIST=/etc/essids
-			
-	# wpa_supplicant configuration file, (default /etc/wpa_supplicant.conf)                                                              
-	WPA_SUPPLICANT_CONF=/etc/wpa_supplicant.conf
-				
-	# Kernel module to insert and remove (optional)
-	WIRELESS_MODULE=iwlagn       
+6. open `rc.conf` with your favorite editor, eg `sudo vim /etc/rc.conf`
+7. Paste this somewhere in the file, preferably below the `NETWORKS`-section
+    # Wireless setup
+    																     
+    # Wireless interface, (default wlan0)                                                                                                
+    WIRELESS_INTERFACE=wlan0                                                                                                             
+    		
+    # List of essids to recognise, in descending priority order (default /etc/essids)                                                    
+    ESSID_LIST=/etc/essids
+    		
+    # wpa_supplicant configuration file, (default /etc/wpa_supplicant.conf)                                                              
+    WPA_SUPPLICANT_CONF=/etc/wpa_supplicant.conf
+    			
+    # Kernel module to insert and remove (optional)
+    WIRELESS_MODULE=iwlagn       
 8. change the above variables to conform to your system
-9. test it by running "sudo rc.d start wireless"
-10. add "@wireless" to the "DAEMONS" array in "rc.conf" to autoconnect to a known network in range upon boot
+9. test it by running `sudo rc.d start wireless`
+10. add `@wireless` to the `DAEMONS` array in `rc.conf` to autoconnect to a known network in range upon boot
 
 (un-)supported features!
 ------------------------
