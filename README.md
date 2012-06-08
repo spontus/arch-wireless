@@ -13,9 +13,13 @@ installation :)
 2. symlink `wireless` into `/etc/rc.d` using `ln -s`
 3. make sure `wireless` is executable using `chmod +x`
 4. create a new file called `/etc/essids` and list the essids of your networks there, eg.
-`   homewifi
+`
+    homewifi
+
     eduroam
-    workwifi`
+
+    workwifi
+`
 if homewifi and eduroam are both in range it will connect to homewifi
 5. add your authentication-details to /etc/wpa_supplicant.conf, see https://wiki.archlinux.org/index.php/WPA_supplicant for instructions
 6. open `rc.conf` with your favorite editor, eg `sudo vim /etc/rc.conf`
