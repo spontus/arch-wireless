@@ -15,11 +15,19 @@ if [ -z $WPA_SUPPLICANT_CONF ]; then
 	WPA_SUPPLICANT_CONF=/etc/wpa_supplicant.conf
 fi
 
+IFCONFIG="/sbin/ifconfig $WIRELESS_INTERFACE"
+IWLIST="/usr/sbin/iwlist $WIRELESS_INTERFACE"
+IWCONFIG="/usr/sbin/iwconfig $WIRELESS_INTERFACE"
+WPA_SUPPLICANT_PIDFILE="/var/run/wpa_supplicant-$WIRELESS_INTERFACE.pid"
+DHCPCD_PIDFILE="/var/run/dhcpcd-$WIRELESS_INTERFACE.pid"
+
+WPA_SUPPLICANT="/usr/sbin/wpa_supplicant -B -i $WIRELESS_INTERFACE -c $WPA_SUPPLICANT_CONF -P $WPA_SUPPLICANT_PIDFILE"
+DHCPCD="/usr/sbin/dhcpcd $WIRELESS_INTERFACE"
 
 case "$1" in
 	start)
 
-		if [ $(ifconfig $WIRELESS_INTERFACE 2> /dev/null | grep inet | wc -l) -ne 0 ] ; then
+		if [ $($IFCONFIG 2> /dev/null | grep inet | wc -l) -ne 0 ] ; then
 			echo "Wireless Network is already running. Try 'wireless restart'"
 			stat_fail
 			exit
@@ -31,8 +39,8 @@ case "$1" in
 			modprobe $WIRELESS_MODULE
 		fi
 
- 		ifconfig $WIRELESS_INTERFACE up
-		SCAN=$(iwlist $WIRELESS_INTERFACE scan)
+ 		$IFCONFIG up
+		SCAN=$($IWLIST scan)
 		essid_file=$ESSID_LIST
 
 		exec<$essid_file
@@ -40,12 +48,12 @@ case "$1" in
 		   do
 			if [[ -n $line && $line != \#* && $(echo $SCAN | grep "ESSID:\"$line\"" | head -n 1 | wc -l) -eq 1 ]] ; then
 				ESSID=$line
-				iwconfig $WIRELESS_INTERFACE essid "$ESSID"
-				wpa_supplicant -B -i $WIRELESS_INTERFACE -c $WPA_SUPPLICANT_CONF  -P /var/run/wpa_supplicant-$WIRELESS_INTERFACE.pid
+				$IWCONFIG essid "$ESSID"
+				$WPA_SUPPLICANT
 
 				sleep 1
 
-				if [ -z $(dhcpcd $WIRELESS_INTERFACE 2> /dev/null | grep "leased \([0-9]\{0,3\}\.\?\)\{4\}") ] ; then
+				if [ -z $( $DHCPCD 2> /dev/null | grep "leased \([0-9]\{0,3\}\.\?\)\{4\}") ] ; then
 					add_daemon wireless
 					echo "Connected to $ESSID"
 					stat_done
@@ -64,23 +72,22 @@ case "$1" in
 
 		;;
 	stop)
-		if [ $(ifconfig $WIRELESS_INTERFACE | grep inet | wc -l) != "0" ] ; then
+		if [ $( $IFCONFIG | grep inet | wc -l) != "0" ] ; then
 			stat_busy "Stopping Wireless Network"
 
-			if [ -e /var/run/dhcpcd-$WIRELESS_INTERFACE.pid ] ; then
-				kill $(cat /var/run/dhcpcd-$WIRELESS_INTERFACE.pid)
+			if [ -e $DHCPCD_PIDFILE ] ; then
+				kill $(cat $DHCPCD_PIDFILE)
 			fi
 
-			if [ -e /var/run/wpa_supplicant-$WIRELESS_INTERFACE.pid ] ; then
-				kill $(cat /var/run/wpa_supplicant-$WIRELESS_INTERFACE.pid)
+			if [ -e $WPA_SUPPLICANT_PIDFILE ] ; then
+				kill $(cat $WPA_SUPPLICANT_PIDFILE)
 			fi
 
-			ifconfig $WIRELESS_INTERFACE down
+			$IFCONFIG down
 
 			if [ -n $WIRELESS_MODULE ]; then
 				modprobe -r $WIRELESS_MODULE
 			fi
-
 			rm_daemon wireless
 			stat_done
 			exit
@@ -97,9 +104,9 @@ case "$1" in
 		$0 start
 		;;
 	status)
-		if [ $(ifconfig $WIRELESS_INTERFACE 2> /dev/null | grep inet | wc -l) -ne 0 ] ; then
-			iwconfig $WIRELESS_INTERFACE
-			ifconfig $WIRELESS_INTERFACE
+		if [ $( $IFCONFIG 2> /dev/null | grep inet | wc -l) -ne 0 ] ; then
+			IWCONFIG
+			IFCONFIG
 		else
 			echo "Wireless network is not running" >&2
 		fi
