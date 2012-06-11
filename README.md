@@ -13,8 +13,8 @@ installation :)
 2. symlink `wireless` into `/etc/rc.d` using `ln -s`
 3. make sure `wireless` is executable using `chmod +x`
 4. create a new file called `/etc/essids` and list the essids of your networks there in descending priority, eg.
-
 ``` bash
+
     homewifi
     eduroam
     Work Wireless
