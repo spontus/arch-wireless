@@ -23,7 +23,9 @@ installation :)
 ```
 5.
    add your authentication-details to `/etc/wpa_supplicant.conf`, see https://wiki.archlinux.org/index.php/WPA_supplicant for instructions
-   -- or --
+
+   or
+
    run the `addessid` script to be greeted with an interactive way to add a network to `/etc/essids/` and `/etc/wpa_supplicant.conf`
 
 6. open `rc.conf` with your favorite editor, eg `sudo vim /etc/rc.conf`
