@@ -1,0 +1,102 @@
+#!/bin/bash
+
+. /etc/rc.conf
+
+if [ -z $ESSID_LIST ]; then
+	ESSID_LIST=/etc/essids
+fi
+
+if [ -z $WPA_SUPPLICANT_CONF ]; then
+	WPA_SUPPLICANT_CONF=/etc/wpa_supplicant.conf
+fi
+
+echo -n "ESSID: "
+read ESSID
+
+if [ $(grep "^$ESSID$" $ESSID_LIST) ] ; then
+	echo "Error: \"$ESSID\" already in $ESSID_LIST" >&2
+  exit 1
+fi
+
+if [ $( grep "ssid=\"$ESSID\"" $WPA_SUPPLICANT_CONF ) ] ; then
+	echo "Error: Network with ssid \"$ESSID\" already in $WPA_SUPPLICANT_CONF" >&2
+  exit 1
+fi
+
+echo $ESSID >> $ESSID_LIST
+
+DONE=0
+
+while [ $DONE -eq 0 ]; do
+
+	echo "Enter authentication method"
+	echo "0: none"
+	echo "1: WPA-PSK (CCMP TKIP)"
+	echo "2: WPA-EAP (PEAP, MSCHAPV2) (eduroam)"
+	echo -n ": "
+	read METHOD
+	case $METHOD in
+		0)
+			 echo "Done!"
+			 exit
+		;;
+		1)
+			 VALID=0
+			 while [ $VALID -eq 0 ]; do
+				 echo -n "Enter passphrase: "
+				 read PASS
+				 PHRASE=$(wpa_passphrase $ESSID $PASS)
+				 if [ $? -eq 0 ] ; then
+						VALID=1			
+						PSK=$(echo "$PHRASE" | grep "psk=[a-f0-9]\{64\}")
+						echo $PSK
+						NETWORK=$( cat <<EOF
+network={
+	ssid="$ESSID"
+	proto=RSN
+	key_mgmt=WPA-PSK
+	pairwise=CCMP TKIP
+	group=CCMP TKIP
+$PSK
+}
+EOF
+)
+					DONE=1
+					echo "$NETWORK" >> $WPA_SUPPLICANT_CONF
+				 else
+					echo "Invalid passphrase, has to be between 8 and 63 characters"
+				 fi
+			 done
+		;;
+		2)
+			echo -n "Identity (eg cid@chalmers.se): "  
+			read IDENTITY
+			echo -n "Anonymous identity (eg anonymous@chalmers.se): "
+			read ANONYMOUS
+			echo -n "Password: " 
+			read PASSWORD
+			NETWORK=$( cat <<EOF
+network={
+	ssid="$ESSID"
+	key_mgmt=WPA-EAP
+	eap=PEAP
+	identity="$IDENTITY"
+	anonymous_identity="$ANONYMOUS"
+	password="$PASSWORD"
+	ca_cert="/etc/ssl/certs/Thawte_Premium_Server_CA.pem"
+	subject_match="/CN=eduroam.chalmers.se"
+	phase2="auth=MSCHAPV2"
+	priority=1
+}
+EOF
+)
+		echo "$NETWORK" >> $WPA_SUPPLICANT_CONF
+		DONE=1
+		;;
+		*)
+			 echo "Error, please try again"
+		;;
+	esac
+	echo ""
+
+done
