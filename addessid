@@ -37,8 +37,7 @@ while [ $DONE -eq 0 ]; do
 	read METHOD
 	case $METHOD in
 		0)
-			 echo "Done!"
-			 exit
+			 DONE=1
 		;;
 		1)
 			 VALID=0
