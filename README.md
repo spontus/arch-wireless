@@ -21,7 +21,11 @@ installation :)
     #comment lines with #
     #coffee cafe 
 ```
-5. add your authentication-details to `/etc/wpa_supplicant.conf`, see https://wiki.archlinux.org/index.php/WPA_supplicant for instructions
+5.
+   add your authentication-details to `/etc/wpa_supplicant.conf`, see https://wiki.archlinux.org/index.php/WPA_supplicant for instructions
+   -- or --
+   run the `addessid` script to be greeted with an interactive way to add a network to `/etc/essids/` and `/etc/wpa_supplicant.conf`
+
 6. open `rc.conf` with your favorite editor, eg `sudo vim /etc/rc.conf`
 7. Paste this somewhere in the file, preferably below the `NETWORKS`-section
 ``` bash
@@ -51,6 +55,7 @@ installation :)
 * DHCP is supported
 * static network settings are not supported yet
 * load/unload driver-modules for wifi-chip is supported, useful when dealing with annoying wifi-chips such as certain broadcom models
+* Eduroam works great
 * more things that i forgot
 
 
