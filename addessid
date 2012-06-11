@@ -97,6 +97,6 @@ EOF
 			 echo "Error, please try again"
 		;;
 	esac
-	echo ""
+	echo "Done! Run rc.d (re)start wireless to attempt connection"
 
 done
