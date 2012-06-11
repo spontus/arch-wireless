@@ -72,7 +72,7 @@ case "$1" in
 			fi
 
 			if [ -e /var/run/wpa_supplicant-$WIRELESS_INTERFACE.pid ] ; then
-				kill $(cat /var/run/dhcpcd-$WIRELESS_INTERFACE.pid)
+				kill $(cat /var/run/wpa_supplicant-$WIRELESS_INTERFACE.pid)
 			fi
 
 			ifconfig $WIRELESS_INTERFACE down
