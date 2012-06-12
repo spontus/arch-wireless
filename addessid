@@ -48,7 +48,6 @@ while [ $DONE -eq 0 ]; do
 				 if [ $? -eq 0 ] ; then
 						VALID=1			
 						PSK=$(echo "$PHRASE" | grep "psk=[a-f0-9]\{64\}")
-						echo $PSK
 						NETWORK=$( cat <<EOF
 network={
 	ssid="$ESSID"
