@@ -49,6 +49,11 @@ case "$1" in
 			if [[ -n $line && $line != \#* && $(echo $SCAN | grep "ESSID:\"$line\"" | head -n 1 | wc -l) -eq 1 ]] ; then
 				ESSID=$line
 				$IWCONFIG essid "$ESSID"
+		    if [[ $( $IWCONFIG | grep "ESSID:\"$ESSID\"" | wc -l ) -ne 1 ]] ; then
+					echo "Unable to associate with \"$ESSID\""
+					stat_fail
+					exit 1
+				fi
 				$WPA_SUPPLICANT
 
 				sleep 1
